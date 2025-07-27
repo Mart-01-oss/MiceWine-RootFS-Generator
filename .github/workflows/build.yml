@@ -40,26 +40,7 @@ jobs:
         curl -LO# https://github.com/KreitinnSoftware/MiceWine-RootFS-Generator/releases/download/$(curl -s https://api.github.com/repos/KreitinnSoftware/MiceWine-RootFS-Generator/releases | grep tag_name -m 1 | cut -d ":" -f 2 | sed "s/\"//g" | sed "s/,//g" | sed "s/ //g")/MiceWine-Packages.zip || true
         sudo unzip -o MiceWine-Packages.zip -d /mnt/arch/MiceWine-RootFS-Generator/built-pkgs || true
         rm -f MiceWine-Packages.zip
-
-    - name: "Setup Basic Android (x86_64) Runtime Environment (Required for Building x86_64 glib)"
-      run: |
-        git clone https://github.com/termux/termux-docker.git
-        sudo cp -rf termux-docker/system/x86 /mnt/arch/system
-        sudo chown -R $(whoami):$(whoami) /mnt/arch/system
-        sudo chmod 755 -R /mnt/arch/system
-
-    - name: "Start Building (x86_64)"
-      run: |
-        sudo arch-chroot /mnt/arch bash -c "cd /MiceWine-RootFS-Generator && ./build-all.sh x86_64 --ci && cd logs && 7z a /MiceWine-RootFS-$(git rev-parse --short HEAD)-x86_64-Logs.zip"
-
-    - name: "Create RootFS File (x86_64)"
-      run: |
-        sudo arch-chroot /mnt/arch bash -c "cd /MiceWine-RootFS-Generator && ./create-rootfs-rat.sh x86_64 && mv MiceWine-RootFS-\($(git rev-parse --short HEAD)\)-x86_64.rat /MiceWine-RootFS-$(git rev-parse --short HEAD)-x86_64.rat"
-
-    - name: "Clean (x86_64) RootFS"
-      run: |
-        sudo rm -rf /mnt/arch/data /mnt/arch/MiceWine-RootFS-Generator/workdir /mnt/arch/MiceWine-RootFS-Generator/rootfs
-
+        
     - name: "Start Building (aarch64)"
       run: |
         sudo arch-chroot /mnt/arch bash -c "cd /MiceWine-RootFS-Generator && ./build-all.sh aarch64 --ci && cd logs && 7z a /MiceWine-RootFS-$(git rev-parse --short HEAD)-aarch64-Logs.zip"
